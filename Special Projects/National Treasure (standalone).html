@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>National Treasure Pool Game</title>
+  <style>
+    :root {
+      --navy: #17345c;
+      --blue: #2f5aa6;
+      --cream: #f7efd8;
+      --gold: #e8c15f;
+      --red: #cf4436;
+      --ink: #1b2740;
+      --white: #fffaf0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,.35) 0 9%, transparent 10%),
+        radial-gradient(circle at 85% 18%, rgba(255,255,255,.22) 0 7%, transparent 8%),
+        linear-gradient(135deg, #244d91, #102848);
+      padding: 18px;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    header {
+      background: var(--cream);
+      border: 4px solid var(--white);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header:before, header:after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 14px;
+      background: repeating-linear-gradient(90deg, var(--red) 0 28px, var(--white) 28px 56px);
+    }
+    h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.4rem, 8vw, 5.5rem); color: var(--navy); letter-spacing: .02em; line-height: .9; }
+    .tag { margin: 10px 0 0; font-size: 1rem; color: #6b5d3b; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; margin-top: 18px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    .panel {
+      background: rgba(255,250,240,.95);
+      border: 3px solid rgba(255,255,255,.75);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+    }
+    h2 { margin: 0 0 12px; color: var(--navy); font-size: 1.35rem; }
+    .buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+    button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      border-radius: 18px;
+      font-weight: 900;
+      color: var(--ink);
+      padding: 14px 12px;
+      min-height: 54px;
+      font-size: 1rem;
+      box-shadow: 0 6px 0 rgba(0,0,0,.18);
+      transform: translateY(0);
+    }
+    button:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,.18); }
+    .coin5 { background: #f4d781; }
+    .coin10 { background: #f0b34e; }
+    .gem { background: #fbfaf5; color: var(--red); }
+    .small { min-height: 36px; padding: 8px 10px; border-radius: 12px; font-size: .86rem; }
+    .danger { background: #ffd7d1; color: #8d241b; }
+    .neutral { background: #e8edf8; color: var(--navy); }
+    input, select {
+      width: 100%;
+      border: 2px solid rgba(27,42,68,.18);
+      border-radius: 14px;
+      padding: 12px;
+      font: inherit;
+      background: white;
+    }
+    .addrow { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .team {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f8f1dc;
+      margin-bottom: 10px;
+      border: 1px solid rgba(27,42,68,.09);
+    }
+    .name { font-weight: 900; color: var(--navy); }
+    .score { font-family: Georgia, serif; font-size: 2rem; font-weight: 900; color: var(--red); text-align: right; }
+    .scoreBtns { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .empty { color: #806f4a; background: #f8f1dc; padding: 14px; border-radius: 14px; font-weight: 700; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,18,35,.74);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 10;
+    }
+    .modal.show { display: flex; }
+    .card {
+      width: min(680px, 100%);
+      background: var(--cream);
+      border: 5px solid var(--white);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 26px 70px rgba(0,0,0,.35);
+    }
+    .badge { display:inline-block; background: var(--red); color: white; padding: 8px 12px; border-radius: 999px; font-weight: 900; letter-spacing: .06em; }
+    .category { margin-top: 14px; color: #806f4a; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: .85rem; }
+    .question { font-size: clamp(1.4rem, 5vw, 2.25rem); line-height: 1.1; font-weight: 900; color: var(--navy); margin: 10px 0 16px; }
+    .answer { display:none; background: #fff7d6; border: 2px dashed var(--gold); padding: 12px; border-radius: 14px; font-weight: 900; margin-bottom: 14px; }
+    .answer.show { display:block; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .note { margin-top: 12px; min-height: 24px; font-weight: 900; color: var(--cream); text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>National Treasure</h1>
+      <p class="tag">A backyard trivia dive for patriots, pool goblins, and very competitive adults.</p>
+    </header>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Dive for a Card</h2>
+        <p>Tap the coin or gem someone grabbed from the pool. The answer stays hidden until you reveal it.</p>
+        <div class="buttons">
+          <button class="coin5" onclick="draw('5')">5 pts</button>
+          <button class="coin10" onclick="draw('10')">10 pts</button>
+          <button class="gem" onclick="draw('gem')">Gem</button>
+        </div>
+        <div class="note" id="note"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Teams & Score</h2>
+        <div class="addrow">
+          <input id="teamName" placeholder="Team name" onkeydown="if(event.key==='Enter') addTeam()" />
+          <button class="small neutral" onclick="addTeam()">Add</button>
+        </div>
+        <div id="teams" style="margin-top:14px"></div>
+        <div class="row">
+          <button class="small neutral" onclick="resetScores()">Reset scores</button>
+          <button class="small danger" onclick="clearTeams()">Clear teams</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="card">
+      <span class="badge" id="badge"></span>
+      <div class="category" id="category"></div>
+      <div class="question" id="question"></div>
+      <div class="answer" id="answer"></div>
+      <label id="teamLabel" style="font-weight:900;color:var(--navy)">Answering team</label>
+      <select id="selectedTeam"></select>
+      <div id="questionBtns" class="row">
+        <button class="neutral" onclick="revealAnswer()">Reveal answer</button>
+        <button class="coin5" onclick="correctAnswer()" id="correctBtn">Correct</button>
+        <button class="danger" onclick="missedAnswer()">Missed</button>
+        <button class="neutral" onclick="closeModal()">Close</button>
+      </div>
+      <div id="gemBtns" class="buttons" style="display:none">
+        <button class="danger" onclick="gemAdjust(-10)">-10</button>
+        <button class="danger" onclick="gemAdjust(-5)">-5</button>
+        <button class="coin5" onclick="gemAdjust(5)">+5</button>
+        <button class="coin10" onclick="gemAdjust(10)">+10</button>
+        <button class="coin10" onclick="gemAdjust(15)">+15</button>
+        <button class="neutral" onclick="closeModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const q5 = [
+      {cat:"Fourth of July", q:"Which month do Americans celebrate Independence Day?", a:"July"},
+      {cat:"Presidents", q:"Who was the first U.S. president?", a:"George Washington"},
+      {cat:"Americana", q:"What bird is the national symbol of the United States?", a:"Bald eagle"},
+      {cat:"Flag", q:"How many stars are on the U.S. flag?", a:"50"},
+      {cat:"Geography", q:"What is the capital of the United States?", a:"Washington, D.C."},
+      {cat:"Pop Culture", q:"Which superhero is known as the star-spangled Avenger?", a:"Captain America"},
+      {cat:"Food", q:"Which food is most famously eaten at Coney Island on July 4th?", a:"Hot dogs"},
+      {cat:"Music", q:"Complete the song title: Born in the _____.", a:"U.S.A."},
+      {cat:"Landmarks", q:"Which statue welcomes visitors in New York Harbor?", a:"The Statue of Liberty"},
+      {cat:"Government", q:"How many branches of U.S. government are there?", a:"Three"},
+      {cat:"States", q:"Which state is nicknamed the Grand Canyon State?", a:"Arizona"},
+      {cat:"Movies", q:"Which actor plays Indiana Jones?", a:"Harrison Ford"},
+      {cat:"History", q:"What document begins with 'We the People'?", a:"The U.S. Constitution"},
+      {cat:"Sports", q:"What sport uses a bat, bases, and innings?", a:"Baseball"},
+      {cat:"Pop Culture", q:"Which social platform was formerly known as Twitter?", a:"X"},
+      {cat:"Geography", q:"Which is larger by area, Alaska or Texas?", a:"Alaska"},
+      {cat:"Food", q:"What soft drink was invented in Atlanta?", a:"Coca-Cola"},
+      {cat:"Movies", q:"Which movie has the line 'Life is like a box of chocolates'?", a:"Forrest Gump"},
+      {cat:"Government", q:"What is the highest court in the United States?", a:"The Supreme Court"},
+      {cat:"Presidents", q:"Which president appears on the $1 bill?", a:"George Washington"}
+    ];
+    const q10 = [
+      {cat:"Declaration", q:"Who is credited as the main author of the Declaration of Independence?", a:"Thomas Jefferson"},
+      {cat:"Declaration", q:"In what city was the Declaration of Independence signed?", a:"Philadelphia"},
+      {cat:"Constitution", q:"How many amendments does the U.S. Constitution currently have?", a:"27"},
+      {cat:"Government", q:"How many U.S. Senators does each state have?", a:"Two"},
+      {cat:"Presidents", q:"What is the minimum age to become U.S. President?", a:"35"},
+      {cat:"History", q:"Which president purchased the Louisiana Territory?", a:"Thomas Jefferson"},
+      {cat:"National Parks", q:"What was the first national park in the United States?", a:"Yellowstone"},
+      {cat:"U.S. Flag", q:"How many stripes are on the U.S. flag?", a:"13"},
+      {cat:"Weird America", q:"Which U.S. state has only one syllable in its name?", a:"Maine"},
+      {cat:"Pop Culture", q:"Which sitcom is set in the fictional town of Pawnee, Indiana?", a:"Parks and Recreation"},
+      {cat:"Sports", q:"How many points is a touchdown worth before the extra point?", a:"Six"},
+      {cat:"Geography", q:"Which state has the most national parks?", a:"California"},
+      {cat:"History", q:"During which war was the Declaration of Independence written?", a:"The American Revolutionary War"},
+      {cat:"Landmarks", q:"Which Nevada site is tied to UFO conspiracy theories?", a:"Area 51"},
+      {cat:"Music", q:"Which city is widely known as the birthplace of jazz?", a:"New Orleans"},
+      {cat:"Food", q:"What candy 'melts in your mouth, not in your hand'?", a:"M&M's"},
+      {cat:"Modern America", q:"Which platform is known for short-form dance and trend videos?", a:"TikTok"},
+      {cat:"Presidents", q:"Which president appears on the $20 bill?", a:"Andrew Jackson"},
+      {cat:"Constitution", q:"Which branch of government interprets the laws?", a:"The judicial branch"},
+      {cat:"Fourth of July", q:"Which city hosts Nathan's famous Hot Dog Eating Contest?", a:"New York City, Coney Island"}
+    ];
+    const gems = [
+      {name:"Liberty Bell", text:"Steal 10 points from any team."},
+      {name:"Constitution Shield", text:"Save this card. Use it to block one penalty or wrong-answer loss."},
+      {name:"Fireworks Finale", text:"Every other team loses 5 points."},
+      {name:"Bald Eagle Bonus", text:"Answer a 5-point question correctly and earn 15 instead."},
+      {name:"Mount Rushmore", text:"Choose four people to answer together. If correct, earn 10 points."},
+      {name:"Founding Father Flex", text:"Choose another team to answer a 10-point question. If they miss, you get 10."},
+      {name:"Stars & Stripes", text:"Double the points from your next correct answer."},
+      {name:"Boston Tea Party", text:"Dump 5 points from the team currently in first place."},
+      {name:"Hidden Map", text:"Peek at the answer before deciding to answer. Pass means no gain, no loss."},
+      {name:"Uncle Sam Tax", text:"Collect 5 points from every team with more points than you."},
+      {name:"Pool Party Patriot", text:"Pick a teammate for a dramatic cannonball. Group approves, gain 10."},
+      {name:"Declaration Duel", text:"Challenge another team to a 5-point question. Winner gets 10 points."}
+    ];
+
+    let teams = JSON.parse(localStorage.getItem('nationalTreasureTeams') || '[]');
+    if (!teams.length) teams = [{name:'The Firecrackers', score:25}, {name:'Deep Enders', score:15}];
+    let current = null;
+    const decks = {};
+    function save(){ localStorage.setItem('nationalTreasureTeams', JSON.stringify(teams)); }
+    function shuffle(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function pick(kind){ const arr = kind==='5'?q5:kind==='10'?q10:gems; if(!decks[kind] || decks[kind].pos>=arr.length) decks[kind]={order:shuffle(arr.length),pos:0}; return arr[decks[kind].order[decks[kind].pos++]]; }
+    function renderTeams(){
+      const el = document.getElementById('teams');
+      if(!teams.length){ el.innerHTML = '<div class="empty">No teams yet. Add a team and let chaos do its tiny patriotic dance.</div>'; renderOptions(); return; }
+      el.innerHTML = teams.map((t,i)=>`<div class="team"><div><div class="name">${escapeHtml(t.name)}</div></div><div class="score">${t.score}</div><div class="scoreBtns"><button class="small danger" onclick="adjust(${i},-10)">-10</button><button class="small danger" onclick="adjust(${i},-5)">-5</button><button class="small coin5" onclick="adjust(${i},5)">+5</button><button class="small coin10" onclick="adjust(${i},10)">+10</button></div></div>`).join('');
+      renderOptions();
+    }
+    function renderOptions(){ document.getElementById('selectedTeam').innerHTML = teams.map((t,i)=>`<option value="${i}">${escapeHtml(t.name)} (${t.score})</option>`).join(''); }
+    function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function addTeam(){ const input=document.getElementById('teamName'); const name=input.value.trim(); if(!name) return; teams.push({name,score:0}); input.value=''; save(); renderTeams(); }
+    function adjust(i,pts){ teams[i].score += pts; save(); renderTeams(); }
+    function resetScores(){ teams = teams.map(t=>({...t,score:0})); save(); renderTeams(); }
+    function clearTeams(){ if(confirm('Clear all teams?')){ teams=[]; save(); renderTeams(); } }
+    function draw(kind){
+      const item = pick(kind);
+      current = kind==='gem' ? {type:'gem', ...item} : {type:'question', points:kind==='5'?5:10, ...item};
+      document.getElementById('badge').textContent = current.type==='gem' ? 'GEM' : current.points + ' PTS';
+      document.getElementById('category').textContent = current.type==='gem' ? current.name : current.cat;
+      document.getElementById('question').textContent = current.type==='gem' ? current.text : current.q;
+      document.getElementById('answer').textContent = current.type==='question' ? 'Answer: ' + current.a : '';
+      document.getElementById('answer').classList.remove('show');
+      document.getElementById('questionBtns').style.display = current.type==='question' ? 'grid' : 'none';
+      document.getElementById('gemBtns').style.display = current.type==='gem' ? 'grid' : 'none';
+      document.getElementById('teamLabel').textContent = current.type==='gem' ? 'Apply gem to' : 'Answering team';
+      document.getElementById('correctBtn').textContent = current.type==='question' ? 'Correct +' + current.points : 'Correct';
+      document.getElementById('modal').classList.add('show');
+    }
+    function revealAnswer(){ document.getElementById('answer').classList.add('show'); }
+    function correctAnswer(){ const i=+document.getElementById('selectedTeam').value; if(current && current.type==='question' && teams[i]) adjust(i,current.points); closeModal(); }
+    function missedAnswer(){ closeModal(); const n=document.getElementById('note'); n.textContent='Back in the pool, no points.'; setTimeout(()=>n.textContent='',2200); }
+    function gemAdjust(pts){ const i=+document.getElementById('selectedTeam').value; if(teams[i]) adjust(i,pts); }
+    function closeModal(){ document.getElementById('modal').classList.remove('show'); current=null; }
+    renderTeams();
+  </script>
+</body>
+</html>
