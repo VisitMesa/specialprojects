@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Magic Orange | Visit Mesa Holiday 2026</title>
+<meta name="description" content="Think of a question. Tap the orange. A holiday fortune from Visit Mesa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Lulo is the brand display face; Montserrat is the approved fallback until Lulo web files are supplied. -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Editable palette ---------- */
+  :root {
+    --teal: #5cc6c8;        /* card ground (from approved art) */
+    --orange: #f36e21;      /* vm-orange-mark */
+    --orange-deep: #e05f17;
+    --leaf: #1e6b3a;
+    --stem: #1f5a30;
+    --cream: #fbf4e2;
+    --navy: #1b3d6b;        /* vm-navy: all type */
+    --page: #f6f1e6;        /* surround behind the card on wide screens */
+    --shake-ms: 800ms;      /* keep 700-900 */
+    --font-display: "Lulo", "Lulo Clean", "Montserrat", Arial, sans-serif;
+    --font-sans: "Tide Sans", "Montserrat", Arial, Calibri, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--page);
+    font-family: var(--font-sans);
+    color: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100svh;
+    padding: clamp(0px, 3vw, 28px);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card {
+    position: relative; overflow: hidden;
+    width: 100%; max-width: 520px;
+    min-height: min(100svh - 2 * clamp(0px, 3vw, 28px), 900px);
+    background: var(--teal);
+    border-radius: clamp(0px, 4vw, 28px);
+    display: flex; flex-direction: column; align-items: center;
+    padding: clamp(28px, 7vh, 56px) clamp(20px, 6vw, 40px) clamp(20px, 4vh, 32px);
+    isolation: isolate;
+  }
+  @media (max-height: 700px) { .orange-btn { width: min(86vw, 440px, 41svh); } h1 { font-size: 24px; } .prompt { font-size: 16px; } footer { font-size: 13px; } .card { padding-top: 22px; padding-bottom: 14px; } }
+  @media (max-width: 540px) { body { padding: 0; } .card { border-radius: 0; min-height: 100svh; } }
+
+  .stage { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    line-height: 1.08;
+    text-align: center;
+    font-size: clamp(24px, 7vw, 36px);
+    max-width: 13ch;
+    text-wrap: balance;
+  }
+
+  /* ---------- The orange button ---------- */
+  .orange-btn {
+    appearance: none; border: 0; background: none; padding: 0; margin: clamp(8px, 2.5vh, 24px) 0 0;
+    cursor: pointer; border-radius: 50%;
+    width: min(90vw, 440px, 50svh);
+    color: inherit; font: inherit;
+    touch-action: manipulation;
+  }
+  .orange-btn:focus { outline: none; }
+  .orange-btn:focus-visible .focus-ring { opacity: 1; }
+  .focus-ring { opacity: 0; transition: opacity 120ms; }
+
+  .shaker {
+    position: relative; width: 100%; aspect-ratio: 400 / 440;
+    container-type: inline-size;
+    transform-origin: 50% 62%;
+    transition: transform 200ms cubic-bezier(.22,1,.36,1);
+  }
+  .orange-btn:hover .shaker { transform: translateY(-3px); }
+  .orange-btn:active .shaker { transform: translateY(1px); }
+  .shaker.is-shaking { animation: wobble var(--shake-ms) cubic-bezier(.36,.07,.19,.97) both; }
+  @keyframes wobble {
+    0%   { transform: rotate(0) translate(0,0); }
+    8%   { transform: rotate(-10deg) translate(-2.2%, 0.4%); }
+    18%  { transform: rotate(9deg)   translate(2.2%, -0.6%); }
+    29%  { transform: rotate(-8deg)  translate(-1.8%, 0.3%); }
+    40%  { transform: rotate(7deg)   translate(1.6%, -0.5%); }
+    52%  { transform: rotate(-5deg)  translate(-1.1%, 0.2%); }
+    64%  { transform: rotate(3.5deg) translate(0.7%, 0); }
+    76%  { transform: rotate(-2deg)  translate(-0.3%, 0); }
+    88%  { transform: rotate(1deg); }
+    100% { transform: rotate(0) translate(0,0); }
+  }
+  .shaker svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+  .logo { transition: opacity 260ms ease, transform 320ms cubic-bezier(.22,1,.36,1); transform-box: fill-box; transform-origin: center; }
+  .is-hidden { opacity: 0; }
+
+  /* Fortune text: centered in the cream window (square inscribed in the circle) */
+  .fortune {
+    position: absolute;
+    left: 32.5%; top: 44.1%; width: 35%; height: 31%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--navy);
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 5cqw;
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+    overflow-wrap: normal;
+    transition: opacity 280ms ease 40ms, transform 320ms cubic-bezier(.22,1,.36,1) 40ms;
+    pointer-events: none;
+  }
+  .fortune.is-hidden { opacity: 0; transform: scale(.9); transition-delay: 0ms; }
+
+  .prompt {
+    margin: clamp(8px, 2vh, 18px) 0 0;
+    font-weight: 700; font-size: clamp(17px, 4.6vw, 20px);
+    text-align: center;
+  }
+  footer {
+    padding-top: clamp(14px, 3vh, 28px);
+    text-align: center; font-size: 15px; line-height: 1.45; font-weight: 600;
+    max-width: 30ch;
+  }
+  footer .sig { display: block; margin-top: 6px; font-size: 11px; letter-spacing: .14em; font-weight: 800; text-transform: uppercase; }
+
+  /* Twinkling sparkles: staggered, gentle; off for reduced motion */
+  .tw { transform-box: fill-box; transform-origin: center; animation: twinkle 3.6s ease-in-out infinite; }
+  @keyframes twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 45% { opacity: .35; transform: scale(.55); } 60% { opacity: .5; transform: scale(.7); } }
+  .tw-dot { animation: blink 2.8s ease-in-out infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shaker, .shaker.is-shaking, .tw, .tw-dot { animation: none !important; transition: none; }
+    .orange-btn:hover .shaker, .orange-btn:active .shaker { transform: none; }
+    .logo, .fortune { transition: opacity 150ms linear !important; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="card">
+  <!-- Background: teal grain + cream sparkles (4-point stars only; no radiating line clusters) -->
+  <svg class="bg" viewBox="0 0 480 860" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <filter id="grainBg" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="7" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.99  0 0 0 0 0.97  0 0 0 0 0.9  9 0 0 0 -5.6"/>
+        <feComposite in2="SourceAlpha" operator="in"/>
+      </filter>
+      <path id="spark" d="M0-1C.1-.16.16-.1 1 0 .16.1.1.16 0 1-.1.16-.16.1-1 0-.16-.1-.1-.16 0-1Z"/>
+    </defs>
+    <rect width="480" height="860" fill="#000" filter="url(#grainBg)" opacity=".42"/>
+    <g fill="#fbf4e2">
+      <g transform="translate(64 120) scale(30)"><use class="tw" style="animation-delay:-0s;animation-duration:3.8000000000000003s" href="#spark"/></g>
+      <g transform="translate(430 96) scale(16)"><use class="tw" style="animation-delay:-1.3s;animation-duration:4.4s" href="#spark"/></g>
+      <g transform="translate(448 300) scale(20)"><use class="tw" style="animation-delay:-2.4s;animation-duration:3.2s" href="#spark"/></g>
+      <g transform="translate(30 330) scale(9)"><use class="tw" style="animation-delay:-0.6s;animation-duration:3.8000000000000003s" href="#spark"/></g>
+      <g transform="translate(40 640) scale(18)"><use class="tw" style="animation-delay:-1.9s;animation-duration:4.4s" href="#spark"/></g>
+      <g transform="translate(436 640) scale(30)"><use class="tw" style="animation-delay:-0.9s;animation-duration:3.2s" href="#spark"/></g>
+      <g transform="translate(110 740) scale(13)"><use class="tw" style="animation-delay:-2.9s;animation-duration:3.8000000000000003s" href="#spark"/></g>
+      <g transform="translate(380 790) scale(10)"><use class="tw" style="animation-delay:-1.6s;animation-duration:4.4s" href="#spark"/></g>
+      <circle class="tw-dot" style="animation-delay:-0.7s" cx="160" cy="50" r="3"/><circle class="tw-dot" style="animation-delay:-1.4s" cx="330" cy="40" r="2.2"/><circle class="tw-dot" style="animation-delay:-2.1s" cx="455" cy="200" r="2.6"/>
+      <circle class="tw-dot" style="animation-delay:-0.0s" cx="22" cy="220" r="2.4"/><circle class="tw-dot" style="animation-delay:-0.7s" cx="470" cy="470" r="2.2"/><circle class="tw-dot" style="animation-delay:-1.4s" cx="14" cy="500" r="2.8"/>
+      <circle class="tw-dot" style="animation-delay:-2.1s" cx="80" cy="560" r="2"/><circle class="tw-dot" style="animation-delay:-0.0s" cx="460" cy="560" r="2.4"/><circle class="tw-dot" style="animation-delay:-0.7s" cx="240" cy="820" r="2.6"/>
+      <circle class="tw-dot" style="animation-delay:-1.4s" cx="30" cy="800" r="2.2"/><circle class="tw-dot" style="animation-delay:-2.1s" cx="300" cy="150" r="1.8"/><circle class="tw-dot" style="animation-delay:-2.8s" cx="190" cy="700" r="1.8"/>
+    </g>
+  </svg>
+
+  <div class="stage">
+  <h1>What does 2027 have in store?</h1>
+
+  <button class="orange-btn" id="orangeBtn" type="button" aria-label="Magic orange. Shake it for a 2027 fortune." aria-describedby="prompt">
+    <div class="shaker" id="shaker">
+      <svg viewBox="0 0 400 440" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="speck" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/>
+            <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.86  10 0 0 0 -6.3"/>
+            <feComposite in2="SourceAlpha" operator="in"/>
+          </filter>
+          <filter id="leafGrain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="11" result="n"/>
+            <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.05  0 0 0 0 0.25  0 0 0 0 0.12  8 0 0 0 -4.4"/>
+            <feComposite in2="SourceAlpha" operator="in"/>
+          </filter>
+        </defs>
+        <!-- keyboard focus ring -->
+        <circle class="focus-ring" cx="200" cy="262" r="184" fill="none" stroke="#1b3d6b" stroke-width="5"/>
+        <!-- stem + leaf -->
+        <rect x="191" y="58" width="17" height="44" rx="4" fill="#1f5a30"/>
+        <path d="M206 78C228 42 290 26 352 34 331 76 268 106 206 78Z" fill="#1e6b3a"/>
+        <path d="M206 78C228 42 290 26 352 34 331 76 268 106 206 78Z" fill="#000" filter="url(#leafGrain)" opacity=".7"/>
+        <!-- fruit -->
+        <circle cx="200" cy="262" r="172" fill="#f36e21"/>
+        <circle cx="200" cy="262" r="172" fill="#000" filter="url(#speck)" opacity=".55"/>
+        <!-- center window: thin cream ring + window -->
+        <circle cx="200" cy="262" r="113" fill="none" stroke="#fbf4e2" stroke-width="3.5"/>
+        <circle cx="200" cy="262" r="104" fill="#fbf4e2"/>
+        <!-- Official Visit Mesa M mark (VisitMesa_Logo_Mark_clr.svg, brand fills) -->
+        <g class="logo" id="logo">
+          <svg x="135" y="213.5" width="130" height="97" viewBox="0 0 114 85">
+            <polygon fill="#f36e21" points="28.49 8.23 27.16 8.23 48.24 70.12 49.35 70.34 48.9 33.96 28.49 8.23"/>
+            <polygon fill="#336195" points="52.67 40.39 71.31 14.88 73.08 14.88 54.45 75.67 53.12 76.77 52.67 40.39"/>
+            <polygon fill="#ffc709" points="37.59 50.6 11.63 72.12 9.64 72.12 24.28 14.44 25.83 14.21 37.59 50.6"/>
+            <polygon fill="#038a96" points="67.76 44.16 102.59 76.11 104.36 76.33 79.07 12 77.52 12 67.76 44.16"/>
+          </svg>
+        </g>
+      </svg>
+      <!-- fortune text, centered in the window -->
+      <div class="fortune is-hidden" id="fortune" aria-hidden="true"><span id="fortuneText"></span></div>
+    </div>
+  </button>
+
+  <p class="prompt" id="prompt">Think of a question. Tap the orange.</p>
+  </div>
+
+  <footer>
+    Warmest wishes for a bright new year, from all of us at Visit Mesa.
+    <span class="sig">Happy Holidays · City Limitless<sup style="font-size:.7em">®</sup></span>
+  </footer>
+
+  <div class="sr-only" aria-live="polite" aria-atomic="true" id="announce"></div>
+</main>
+
+<script>
+(function () {
+  // The 16 approved fortunes. Exact copy; do not edit without approval.
+  var FORTUNES = [
+    "This orange is feeling optimistic.",
+    "The possibilities are limitless.",
+    "Signs point to sunshine.",
+    "Ask again after tacos.",
+    "Your future looks bright.",
+    "Yes, but bring sunscreen.",
+    "The desert says yes.",
+    "Absolutely. Probably.",
+    "Adventure is in your future.",
+    "The stars are aligning.",
+    "Consult a saguaro.",
+    "Shake again. The plot thickens.",
+    "My sources say yes. They're oranges.",
+    "A little zest goes a long way.",
+    "The future is looking juicy.",
+    "The juice is worth the squeeze."
+  ];
+
+  var SHAKE_MS = 800;  // total wobble (0.7-0.9s)
+  var SWAP_MS = 380;   // when the window clouds over mid-shake
+
+  var btn = document.getElementById('orangeBtn');
+  var shaker = document.getElementById('shaker');
+  var logo = document.getElementById('logo');
+  var fortune = document.getElementById('fortune');
+  var fortuneText = document.getElementById('fortuneText');
+  var announce = document.getElementById('announce');
+  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // Shuffle-bag: every fortune appears once before any repeats, never twice in a row.
+  var bag = [], last = -1, busy = false;
+  function nextIndex() {
+    if (!bag.length) {
+      bag = FORTUNES.map(function (_, i) { return i; });
+      for (var i = bag.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = bag[i]; bag[i] = bag[j]; bag[j] = t;
+      }
+      if (bag[bag.length - 1] === last) { var s = bag[0]; bag[0] = bag[bag.length - 1]; bag[bag.length - 1] = s; }
+    }
+    return bag.pop();
+  }
+  // Fit: largest type (in % of orange width) that fits the center window
+  // without breaking a word. Runs live so swapped fonts still fit.
+  var MAX_CQW = 6.8, MIN_CQW = 3.6;
+  function fits() {
+    var box = fortune.getBoundingClientRect();
+    var r = document.createRange(); r.selectNodeContents(fortuneText);
+    var t = r.getBoundingClientRect();
+    var lh = parseFloat(getComputedStyle(fortune).fontSize) * 1.1;
+    return t.height <= lh * 4 + 1 && t.width <= box.width + 0.5 && t.height <= box.height + 0.5 && fortuneText.scrollWidth <= fortune.clientWidth + 0.5;
+  }
+  function fitText() {
+    var w = shaker.getBoundingClientRect().width;
+    for (var c = MAX_CQW; c >= MIN_CQW; c -= 0.1) {
+      fortune.style.fontSize = (w * c / 100) + 'px';
+      if (fits()) { fortune.style.fontSize = c.toFixed(1) + 'cqw'; fortune.dataset.cqw = c.toFixed(1); return; }
+    }
+    fortune.style.fontSize = MIN_CQW + 'cqw';
+  }
+  function hide(el) { el.classList.add('is-hidden'); }
+  function show(el) { el.classList.remove('is-hidden'); }
+
+  function reveal() {
+    var i = nextIndex(); last = i;
+    var text = FORTUNES[i];
+    fortuneText.textContent = text;
+    fortune.dataset.index = i;
+    fitText();
+    void fortune.offsetWidth;
+    show(fortune);
+    announce.textContent = 'The orange says: ' + text;
+  }
+
+  function shake() {
+    if (busy) return;
+    busy = true;
+    btn.setAttribute('aria-busy', 'true');
+    announce.textContent = '';
+    var reduced = mq.matches;
+    if (!reduced) {
+      shaker.classList.remove('is-shaking'); void shaker.offsetWidth;
+      shaker.classList.add('is-shaking');
+    }
+    setTimeout(function () {
+      hide(logo); hide(fortune);
+    }, reduced ? 0 : SWAP_MS);
+    setTimeout(function () {
+      shaker.classList.remove('is-shaking');
+      reveal();
+      busy = false;
+      btn.removeAttribute('aria-busy');
+    }, reduced ? 160 : SHAKE_MS);
+  }
+
+  btn.addEventListener('click', shake);
+  window.__magicOrange = { FORTUNES: FORTUNES, SHAKE_MS: SHAKE_MS,
+    preview: function (text) { fortuneText.textContent = text; fitText(); return fortune.dataset.cqw; } };
+})();
+</script>
+</body>
+</html>
